@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Navigate, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import LiveChat from "./LiveChat";
+import {parse, stringify, toJSON, fromJSON} from 'flatted';
 import GoogleMapReact from 'google-map-react';
 import {
     collection, addDoc,
@@ -23,9 +24,11 @@ import Divider from '@mui/material/Divider';
 import BoltIcon from '@mui/icons-material/Bolt';
 import Paper from "@mui/material/Paper";
 import Typography from '@mui/material/Typography';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import {isVisible} from "@testing-library/user-event/dist/utils";
 import {wrapMapToPropsConstant} from "react-redux/lib/connect/wrapMapToProps";
+import {selectAppointmentsToday} from "../redux/appointments/appointmentsSlice";
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -38,10 +41,11 @@ const Item = styled(Paper)(({ theme }) => ({
 
 function Home() {
     const dispatch = useDispatch()
-    const currentMap = useSelector(selectRDM)
+    // const currentMap = useSelector(selectRDM)
     const driverLiveLocation = useSelector(selectDriverLocation)
-    const map = useSelector(selectRDMMap)
-    const maps = useSelector(selectRDMMaps)
+    // const map = useSelector(selectRDMMap)
+    // const maps = useSelector(selectRDMMaps)
+    const appointmentsToday = useSelector(selectAppointmentsToday)
 
     let location = useLocation()
 
@@ -58,35 +62,66 @@ function Home() {
 
     const [time, setTime] = useState()
 
+    const[apiData, setApiData] = useState()
 
     useEffect(()=>{
-        apiIsLoaded(map, maps)
+        if(apiData){
+            apiIsLoaded(apiData.map, apiData.maps)
+        }
     }, [address])
 
 
-    let directionsRenderer;
-    if(address&&!currentMap){
-        console.log('i ran here')
-        directionsRenderer = new maps.DirectionsRenderer({markerOptions: {visible: false}, polylineOptions: {strokeColor: '#003248'}});
-        dispatch(setRDM(directionsRenderer))
+    // let directionsRenderer;
+    // if(address&&!currentMap){
+    //     directionsRenderer = new maps.DirectionsRenderer({markerOptions: {visible: false}, polylineOptions: {strokeColor: '#003248'}});
+    //     dispatch(setRDM(directionsRenderer))
+    // }
+    const[xx, setXx] = useState()
+
+    if(address&&!xx){
+        setXx(new apiData.maps.DirectionsRenderer({markerOptions: {visible: false}, polylineOptions: {strokeColor: '#003248'}}))
     }
 
     const apiIsLoaded = () => {
+        // if(address) {
+        //     const directionsService = new maps.DirectionsService();
+        //     const origin = { lat: driverLiveLocation.lat, lng: driverLiveLocation.lng };
+        //     const destination = { lat: coords.lat, lng: coords.lng };
+        //     directionsService.route(
+        //         {
+        //             origin: origin,
+        //             destination: destination,
+        //             travelMode: maps.TravelMode.DRIVING,
+        //             avoidHighways: true
+        //         },
+        //         (result, status) => {
+        //             if (status === maps.DirectionsStatus.OK) {
+        //                 currentMap.setMap(map)
+        //                 currentMap.setDirections(result);
+        //             } else {
+        //                 console.error(`error fetching directions ${result}`);
+        //             }
+        //         }
+        //     );
+        //
+        // }
+
         if(address) {
-            const directionsService = new maps.DirectionsService();
+
+            const directionsService = new apiData.maps.DirectionsService();
             const origin = { lat: driverLiveLocation.lat, lng: driverLiveLocation.lng };
             const destination = { lat: coords.lat, lng: coords.lng };
             directionsService.route(
                 {
                     origin: origin,
                     destination: destination,
-                    travelMode: maps.TravelMode.DRIVING,
+                    travelMode: apiData.maps.TravelMode.DRIVING,
                     avoidHighways: true
                 },
                 (result, status) => {
-                    if (status === maps.DirectionsStatus.OK) {
-                        currentMap.setMap(map)
-                        currentMap.setDirections(result);
+                    if (status === apiData.maps.DirectionsStatus.OK) {
+                        xx.setMap(apiData.map)
+                        xx.setDirections(result);
                     } else {
                         console.error(`error fetching directions ${result}`);
                     }
@@ -94,9 +129,9 @@ function Home() {
             );
 
         }
-
     }
 
+    const[requestAppointment, setRequestAppointment] = useState(false)
 
     useEffect(() => {
         // let driverLocationRef = collection(db, 'driverLocation');
@@ -114,11 +149,17 @@ function Home() {
                     doc.data()
                 )
             )
+            if(doc.data().available){
+                setRequestAppointment(false)
+            }else {
+                setRequestAppointment(true)
+            }
             setDefaultCords({lat: doc.data().lat, lng: doc.data().lng})
         });
 
     }, []);
 
+    const[selectedDay, setSelectedDay] = useState('today')
 
     const AnyReactComponent = ({ text }) => <div style={{position: 'absolute', transform: 'translate(-50%, -50%)', zIndex: 1, '&:hover': { zIndex: 2 }}}>
         <ElectricRickshawIcon color="primary" fontSize="large"/>
@@ -127,6 +168,9 @@ function Home() {
     const AnyReactComponentTwo = ({ text }) => <div style={{position: 'absolute', transform: 'translate(-50%, -50%)', zIndex: 1, '&:hover': { zIndex: 2 }}}>
         <EmojiPeopleIcon color="primary" fontSize="large"/>
     </div>;
+
+    const [selectedHour, setSelectedHour] = useState({})
+
 
     if(driverLiveLocation&&driverLiveLocation.lat){
 
@@ -163,9 +207,9 @@ function Home() {
                             yesIWantToUseGoogleMapApiInternals
                             margin={[50, 50, 50, 50]}
                             onGoogleApiLoaded={({ map, maps }) => {
-                                dispatch(setRDMMaps(maps))
-                                dispatch(setRDMMap(map))
-                                // setApiData({map: map, maps: maps})
+                                // dispatch(setRDMMaps(stringify(maps)))
+                                // dispatch(setRDMMap(stringify(map)))
+                                setApiData({map: map, maps: maps})
                                 // apiIsLoaded(map, maps)
                             }}
                             options={{ disableDefaultUI: true, zoomControl: true, styles: mapStyles }}
@@ -210,24 +254,45 @@ function Home() {
                             <Divider>
                                 <BoltIcon />
                             </Divider>
-                            <Typography variant="body1" gutterBottom style={{fontSize: 16}}>
+                            <Typography variant="h6" gutterBottom>
                                 final price
                             </Typography>
-                            <Typography variant="h5" gutterBottom style={{color: '#16db93'}}>
+                            <Typography variant="h5" gutterBottom style={{color: '#000000', marginBottom: 20}}>
                                 $39.00
                             </Typography>
 
-                            <PhoneNumberForm/>
+                            <PhoneNumberForm address={address} setSelectedHour={setSelectedHour} driver={driverLiveLocation} hour={selectedHour} appointments={appointmentsToday}/>
+
+                            {requestAppointment?
+                                <>
+                                    <div style={{textAlign: "center", margin: '20px auto 10px auto'}}>
+                                        <ButtonGroup size='medium'>
+                                            <Button variant={selectedDay==='today'?'contained':'outlined'} onClick={()=>setSelectedDay('today')}>Today</Button>
+                                            <Button variant={selectedDay==='tomorrow'?'contained':'outlined'} onClick={()=>setSelectedDay('tomorrow')}>Tomorrow</Button>
+                                        </ButtonGroup>
+                                    </div>
+
+                                    <DatePickerComp setSelectedHour={setSelectedHour}/>
+
+                                    <Button style={{margin: '20px auto 10px auto'}} type="submit" variant="outlined" onClick={()=>setRequestAppointment(false)}>
+                                        close
+                                    </Button>
+                                </>
+                                :
+                                <Button style={{margin: '20px auto 10px auto'}} type="submit" variant="outlined" onClick={()=>setRequestAppointment(true)}>
+                                    make appointment
+                                </Button>
+                            }
 
                         </Item>
                     </Grid>
                 }
 
-                <LiveChat/>
+                {/*<LiveChat/>*/}
 
-                <Grid item sm={11} lg={10} xs={11}>
-                    <DatePickerComp/>
-                </Grid>
+                {/*<Grid item sm={11} lg={10} xs={11}>*/}
+                {/*    <DatePickerComp/>*/}
+                {/*</Grid>*/}
 
                 </Grid>
         );

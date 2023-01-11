@@ -6,7 +6,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {db} from '../../config-firebase/firebase'
 import {collection, onSnapshot, query, orderBy, limit, doc, addDoc, serverTimestamp, where, getDocs, updateDoc} from 'firebase/firestore'
 import Grid from "@mui/material/Grid";
-import {Autocomplete} from "@react-google-maps/api";
 import Typography from "@mui/material/Typography";
 import {InputBase} from "@mui/material";
 import React, {useState, useEffect} from 'react';
@@ -15,13 +14,16 @@ import Paper from "@mui/material/Paper";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import {getAppointmentsToday, selectAppointmentsToday, getAppointmentsTomorrow, selectAppointmentsTomorrow} from "../../redux/appointments/appointmentsSlice";
+import {setAlert, removeAlert} from "../../redux/alerts/alertsSlice";
 
 
-export default function DatePickerComp() {
+export default function DatePickerComp({setSelectedHour}) {
     const dispatch = useDispatch()
 
     const appointmentsToday = useSelector(selectAppointmentsToday)
@@ -90,6 +92,7 @@ export default function DatePickerComp() {
 
     }, []);
 
+
     let timesList;
     if(appointmentsToday&&appointmentsToday.length>0){
         timesList = appointmentsToday.map((item, index)=>{
@@ -104,28 +107,34 @@ export default function DatePickerComp() {
                         </CardContent>
                         <CardActions>
                             <Button onClick={()=>{
-                                let updatedList = []
-                                for (let i = 0; i < appointmentsToday.length; i++) {
-                                    if(appointmentsToday[i].uid===item.uid){
-                                        updatedList.push({
-                                            available: true,
-                                            reserved: true,
-                                            uid: item.uid,
-                                            time: item.time,
-                                            user: 'silvano'
-                                        })
-                                    }else {
-                                        updatedList.push(appointmentsToday[i])
-                                    }
-                                }
-                                updateDoc(doc(db, 'appointments', 'vRDaxyIRohFyDLEigl5o'),{
-                                    times: updatedList
-                                }).then(()=>{
-                                    console.log('updated list')
+                                // let updatedList = []
+                                // for (let i = 0; i < appointmentsToday.length; i++) {
+                                //     if(appointmentsToday[i].uid===item.uid){
+                                //         updatedList.push({
+                                //             available: true,
+                                //             reserved: true,
+                                //             uid: item.uid,
+                                //             time: item.time,
+                                //             user: 'silvano'
+                                //         })
+                                //     }else {
+                                //         updatedList.push(appointmentsToday[i])
+                                //     }
+                                // }
+                                // updateDoc(doc(db, 'appointments', 'vRDaxyIRohFyDLEigl5o'),{
+                                //     times: updatedList
+                                // }).then(()=>{
+                                //     console.log('updated list')
+                                // })
+                                setSelectedHour({
+                                    time: dd,
+                                    uid: item.uid,
+                                    timestamp: item.time
                                 })
                             }} variant="contained" style={{margin: 5}} disabled={!!item.reserved}>
-                                reserve
+                                add
                             </Button>
+
                         </CardActions>
                     </Card>
 

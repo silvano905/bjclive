@@ -44,7 +44,7 @@ export default function AutocompleteComp({setAddress, setDefaultCords, setCoords
                                 Where is your car located?
                             </Typography>
                         </div>
-                        <InputBase style={{width: '90%', margin: 'auto'}} placeholder="Enter here…"/>
+                        <InputBase style={{width: '90%', margin: 'auto', fontSize: 20}} placeholder="Enter here…"/>
                     </div>
                 </Autocomplete>
             </Item>

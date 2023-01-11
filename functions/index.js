@@ -22,6 +22,7 @@ exports.cleanReservations = functionsFirebase.pubsub.schedule('every day 22:00')
             for (let i = 0; i < list.length; i++) {
                 if(list[i].reserved){
                     list[i].reserved = false
+                    list[i].user = ''
                 }
             }
             citiesRef.update({

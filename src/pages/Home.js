@@ -242,22 +242,22 @@ function Home() {
                 {address&&
                     <Grid item sm={11} lg={10} xs={11}>
                         <Item elevation={4}>
-                            <Typography variant="h5" gutterBottom style={{color: '#3f4238'}}>
+                            <Typography variant="h4" gutterBottom style={{color: '#3f4238'}}>
                                 Closest Driver
                             </Typography>
-                            <Typography variant="h6" gutterBottom>
-                                <span style={{color: 'blue'}}>{time}</span> away from
+                            <Typography variant="h5" gutterBottom>
+                                <span style={{color: 'blue', fontSize: 30}}>{time}</span> away from
                             </Typography>
-                            <Typography variant="h6" gutterBottom>
+                            <Typography variant="h5" gutterBottom>
                                 <span style={{color: '#023047'}}>{address}</span>
                             </Typography>
                             <Divider>
                                 <BoltIcon />
                             </Divider>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h4" gutterBottom>
                                 Final Price
                             </Typography>
-                            <Typography variant="h5" gutterBottom style={{color: '#00a896', marginBottom: 20}}>
+                            <Typography variant="h4" gutterBottom style={{color: '#00a896', marginBottom: 20}}>
                                 $39.00
                             </Typography>
 

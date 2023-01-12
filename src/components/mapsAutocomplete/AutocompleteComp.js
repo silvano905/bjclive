@@ -40,7 +40,7 @@ export default function AutocompleteComp({setAddress, setDefaultCords, setCoords
                 <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
                     <div>
                         <div>
-                            <Typography variant="h6" gutterBottom style={{color: 'gray', marginTop: 10}}>
+                            <Typography variant="h5" gutterBottom style={{color: 'gray', marginTop: 10}}>
                                 Where is your car located?
                             </Typography>
                         </div>

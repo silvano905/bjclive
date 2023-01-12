@@ -14,7 +14,7 @@ import CardActions from "@mui/material/CardActions";
 import {doc, updateDoc} from "firebase/firestore";
 import {db} from "../../config-firebase/firebase";
 
-export default function PhoneNumberForm({driver, hour, setSelectedHour, appointments, address}) {
+export default function PhoneNumberForm({driver, hour, setSelectedHour, appointments, address, needsAppointment}) {
     const [formData, setFormData] = useState({
         phone: ''
     });
@@ -23,10 +23,13 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour, appointm
     const onChange = (e) =>
         setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    const requestJumpNow = (e) => {
+        e.preventDefault()
+    }
 
     const makeAppointment = (e) => {
         e.preventDefault()
-        if(address){
+        if(address&&hour.time){
             let updatedList = []
             for (let i = 0; i < appointments.length; i++) {
                 if(appointments[i].uid===hour.uid){
@@ -52,10 +55,10 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour, appointm
     }
 
     return(
-        <form onSubmit={makeAppointment}>
+        <form>
             {hour&&hour.time?
                 <div>
-                    <FormControl style={{marginBottom: 10}}>
+                    <FormControl style={{marginBottom: 20}}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" component="div">
@@ -72,11 +75,14 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour, appointm
                 </div>
 
                 :
+                needsAppointment&&!hour.time?
                 <FormControl style={{margin: '10px auto 20px auto'}}>
-                    <Typography variant="h6">
+                    <Typography variant="h6" style={{color: "red"}}>
                         Please select a time from below
                     </Typography>
                 </FormControl>
+                    :
+                    null
             }
 
 
@@ -100,12 +106,12 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour, appointm
                 we need your phone number to contact you when the driver has arrived to your location
             </Typography>
 
-            {driver.available?
-                <Button type="submit" variant="contained">
+            {driver.available&&!needsAppointment?
+                <Button type="submit" variant="contained" onClick={requestJumpNow}>
                     request jumpstart
                 </Button>
                 :
-                <Button type="submit" variant="contained" onClick={makeAppointment}>
+                <Button type="submit" variant="contained" onClick={makeAppointment} disabled={!hour.time}>
                     make appointment
                 </Button>
             }

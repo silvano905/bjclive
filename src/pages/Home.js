@@ -242,26 +242,26 @@ function Home() {
                 {address&&
                     <Grid item sm={11} lg={10} xs={11}>
                         <Item elevation={4}>
-                            <Typography variant="h6" gutterBottom style={{color: '#3f4238'}}>
+                            <Typography variant="h5" gutterBottom style={{color: '#3f4238'}}>
                                 Closest Driver
                             </Typography>
-                            <Typography variant="h6" gutterBottom style={{fontSize: 19}}>
+                            <Typography variant="h6" gutterBottom>
                                 <span style={{color: 'blue'}}>{time}</span> away from
                             </Typography>
-                            <Typography variant="body1" gutterBottom style={{fontSize: 19}}>
-                                <span style={{color: 'blue'}}>{address}</span>
+                            <Typography variant="h6" gutterBottom>
+                                <span style={{color: '#023047'}}>{address}</span>
                             </Typography>
                             <Divider>
                                 <BoltIcon />
                             </Divider>
-                            <Typography variant="h6" gutterBottom>
-                                final price
+                            <Typography variant="h5" gutterBottom>
+                                Final Price
                             </Typography>
-                            <Typography variant="h5" gutterBottom style={{color: '#000000', marginBottom: 20}}>
+                            <Typography variant="h5" gutterBottom style={{color: '#00a896', marginBottom: 20}}>
                                 $39.00
                             </Typography>
 
-                            <PhoneNumberForm address={address} setSelectedHour={setSelectedHour} driver={driverLiveLocation} hour={selectedHour} appointments={appointmentsToday}/>
+                            <PhoneNumberForm needsAppointment={requestAppointment} address={address} setSelectedHour={setSelectedHour} driver={driverLiveLocation} hour={selectedHour} appointments={appointmentsToday}/>
 
                             {requestAppointment?
                                 <>

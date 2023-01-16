@@ -28,7 +28,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import {isVisible} from "@testing-library/user-event/dist/utils";
 import {wrapMapToPropsConstant} from "react-redux/lib/connect/wrapMapToProps";
-import {selectAppointmentsToday} from "../redux/appointments/appointmentsSlice";
+import {selectAppointments} from "../redux/appointments/appointmentsSlice";
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -45,7 +45,7 @@ function Home() {
     const driverLiveLocation = useSelector(selectDriverLocation)
     // const map = useSelector(selectRDMMap)
     // const maps = useSelector(selectRDMMaps)
-    const appointmentsToday = useSelector(selectAppointmentsToday)
+    const appointments = useSelector(selectAppointments)
 
     let location = useLocation()
 
@@ -132,6 +132,7 @@ function Home() {
     }
 
     const[requestAppointment, setRequestAppointment] = useState(false)
+    const[appointmentFilter, setAppointmentFilter] = useState('today')
 
     useEffect(() => {
         // let driverLocationRef = collection(db, 'driverLocation');
@@ -261,17 +262,13 @@ function Home() {
                                 $39.00
                             </Typography>
 
-                            <PhoneNumberForm needsAppointment={requestAppointment} address={address} setSelectedHour={setSelectedHour} driver={driverLiveLocation} hour={selectedHour} appointments={appointmentsToday}/>
+                            <PhoneNumberForm needsAppointment={requestAppointment}
+                                             address={address} setSelectedHour={setSelectedHour}
+                                             driver={driverLiveLocation} hour={selectedHour}
+                                             appointments={appointments}/>
 
                             {requestAppointment?
                                 <>
-                                    <div style={{textAlign: "center", margin: '20px auto 10px auto'}}>
-                                        <ButtonGroup size='medium'>
-                                            <Button variant={selectedDay==='today'?'contained':'outlined'} onClick={()=>setSelectedDay('today')}>Today</Button>
-                                            <Button variant={selectedDay==='tomorrow'?'contained':'outlined'} onClick={()=>setSelectedDay('tomorrow')}>Tomorrow</Button>
-                                        </ButtonGroup>
-                                    </div>
-
                                     <DatePickerComp setSelectedHour={setSelectedHour}/>
 
                                     <Button style={{margin: '20px auto 10px auto'}} type="submit" variant="outlined" onClick={()=>setRequestAppointment(false)}>

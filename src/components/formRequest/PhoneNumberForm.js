@@ -14,7 +14,8 @@ import CardActions from "@mui/material/CardActions";
 import {doc, updateDoc} from "firebase/firestore";
 import {db} from "../../config-firebase/firebase";
 
-export default function PhoneNumberForm({driver, hour, setSelectedHour, appointments, address, needsAppointment}) {
+export default function PhoneNumberForm({driver, hour, setSelectedHour,
+                                            appointments, address, needsAppointment}) {
     const [formData, setFormData] = useState({
         phone: ''
     });
@@ -31,8 +32,8 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour, appointm
         e.preventDefault()
         if(address&&hour.time){
             let updatedList = []
-            for (let i = 0; i < appointments.length; i++) {
-                if(appointments[i].uid===hour.uid){
+            for (let i = 0; i < appointments.data.length; i++) {
+                if(appointments.data[i].uid===hour.uid){
                     updatedList.push({
                         available: true,
                         reserved: true,
@@ -41,14 +42,15 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour, appointm
                         user: phone
                     })
                 }else {
-                    updatedList.push(appointments[i])
+                    updatedList.push(appointments.data[i])
                 }
             }
-            updateDoc(doc(db, 'appointments', 'vRDaxyIRohFyDLEigl5o'),{
+            updateDoc(doc(db, 'appointments', appointments.id),{
                 times: updatedList
             }).then(()=>{
                 console.log('updated list')
             })
+
         }else {
 
         }

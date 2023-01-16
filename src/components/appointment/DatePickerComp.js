@@ -19,15 +19,15 @@ import MenuItem from "@mui/material/MenuItem";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import {getAppointmentsToday, selectAppointmentsToday, getAppointmentsTomorrow, selectAppointmentsTomorrow} from "../../redux/appointments/appointmentsSlice";
+import {getAppointments, selectAppointments} from "../../redux/appointments/appointmentsSlice";
 import {setAlert, removeAlert} from "../../redux/alerts/alertsSlice";
+import ButtonGroup from "@mui/material/ButtonGroup";
 
 
-export default function DatePickerComp({setSelectedHour}) {
+export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
     const dispatch = useDispatch()
 
-    const appointmentsToday = useSelector(selectAppointmentsToday)
-    const appointmentsTomorrow = useSelector(selectAppointmentsTomorrow)
+    const appointments = useSelector(selectAppointments)
 
     let availableHours = [
 
@@ -72,30 +72,46 @@ export default function DatePickerComp({setSelectedHour}) {
             console.log(err.message)
         })
     }
+    const[appointmentFilter, setAppointmentFilter] = useState('today')
 
     useEffect(() => {
-        const unsubToday = onSnapshot(doc(db, "appointments", "vRDaxyIRohFyDLEigl5o"), (doc) => {
-            dispatch(
-                getAppointmentsToday(
-                    doc.data().times
-                )
-            )
-        });
+        // const unsubToday = onSnapshot(doc(db, "appointments", 'vRDaxyIRohFyDLEigl5o'), (doc) => {
+        //     dispatch(
+        //         getAppointments(
+        //             doc.data().times
+        //         )
+        //     )
+        // });
 
-        const unsubTomorrow = onSnapshot(doc(db, "appointments", "vRDaxyIRohFyDLEigl5o"), (doc) => {
-            dispatch(
-                getAppointmentsTomorrow(
-                    doc.data().times
+        let p = collection(db, 'appointments')
+        let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("day", "==", appointmentFilter))
+        // const querySnapshot = getDocs(order).then(x=>{
+        //     x.forEach((doc) => {
+        //             dispatch(
+        //                 getAppointments(
+        //                     {data: doc.data().times, id: doc.id}
+        //                 )
+        //             )
+        //     });
+        // })
+        onSnapshot(order, (snapshot) => {
+            snapshot.forEach((doc) => {
+                dispatch(
+                    getAppointments(
+                        {data: doc.data().times, id: doc.id}
+                    )
                 )
-            )
-        });
+            });
+        })
 
-    }, []);
+
+
+    }, [appointmentFilter,]);
 
 
     let timesList;
-    if(appointmentsToday&&appointmentsToday.length>0){
-        timesList = appointmentsToday.map((item, index)=>{
+    if(appointments&&appointments.data.length>0){
+        timesList = appointments.data.map((item, index)=>{
             let dd = new Date(item.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
             return(
                 <Grid item sm={2} lg={3} xs={4}>
@@ -141,10 +157,19 @@ export default function DatePickerComp({setSelectedHour}) {
                 </Grid>
             )
         })
+
+
     }
 
     return(
         <div style={{margin: '2px auto 20px 5px', textAlign: "center"}}>
+            <div style={{textAlign: "center", margin: '20px auto 10px auto'}}>
+                <ButtonGroup size='medium'>
+                    <Button variant={appointmentFilter==='today'?'contained':'outlined'} onClick={()=>setAppointmentFilter('today')}>Today</Button>
+                    <Button variant={appointmentFilter==='tomorrow'?'contained':'outlined'} onClick={()=>setAppointmentFilter('tomorrow')}>Tomorrow</Button>
+                </ButtonGroup>
+            </div>
+
             <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
                 {timesList}
             </Grid>

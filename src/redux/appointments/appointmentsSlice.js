@@ -3,21 +3,16 @@ import { createSlice } from '@reduxjs/toolkit';
 export const appointmentsSlice = createSlice({
     name: 'appointments',
     initialState: {
-        today: [],
-        tomorrow: []
+        appointments: []
     },
     reducers: {
-        getAppointmentsToday: (state, action) => {
-            state.today = action.payload
-        },
-        getAppointmentsTomorrow: (state, action) => {
-            state.tomorrow = action.payload
+        getAppointments: (state, action) => {
+            state.appointments = action.payload
         }
     },
 });
 
-export const { getAppointmentsTomorrow, getAppointmentsToday} = appointmentsSlice.actions;
-export const selectAppointmentsToday = (state) => state.appointments.today;
-export const selectAppointmentsTomorrow = (state) => state.appointments.tomorrow;
+export const { getAppointments} = appointmentsSlice.actions;
+export const selectAppointments = (state) => state.appointments.appointments;
 
 export default appointmentsSlice.reducer;

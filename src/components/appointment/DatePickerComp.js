@@ -110,7 +110,7 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
 
 
     let timesList;
-    if(appointments&&appointments.data.length>0){
+    if(appointments&&appointments.data&&appointments.data.length>0){
         timesList = appointments.data.map((item, index)=>{
             let dd = new Date(item.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
             return(

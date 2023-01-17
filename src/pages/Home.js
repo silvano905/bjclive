@@ -29,6 +29,7 @@ import Button from '@mui/material/Button';
 import {isVisible} from "@testing-library/user-event/dist/utils";
 import {wrapMapToPropsConstant} from "react-redux/lib/connect/wrapMapToProps";
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import {selectAppointments} from "../redux/appointments/appointmentsSlice";
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -43,7 +44,6 @@ const Item = styled(Paper)(({ theme }) => ({
 const ItemThree = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     textAlign: 'center',
-    background: "linear-gradient(45deg, #f6fff8 8%, #eff7f6 80%)",
     height: 110,
     color: 'black',
     lineHeight: '60px',
@@ -58,7 +58,7 @@ const ItemFour = styled(Paper)(({ theme }) => ({
     color: 'white',
     lineHeight: '60px',
     margin: '6px 50px 20px 59px',
-    paddingTop: 8
+    padding: 5
 }));
 
 function Home() {
@@ -305,9 +305,15 @@ function Home() {
                                     </Button>
                                 </>
                                 :
-                                <Button style={{margin: '20px auto 10px auto'}} type="submit" variant="outlined" onClick={()=>setRequestAppointment(true)}>
-                                    make appointment
-                                </Button>
+                                <>
+                                    <Divider style={{margin: '12px auto -8px auto'}}>
+                                        <AccessTimeIcon />
+                                    </Divider>
+                                    <Button style={{margin: '20px auto 10px auto'}} type="submit" variant="contained" color="success" onClick={()=>setRequestAppointment(true)}>
+                                        make appointment
+                                    </Button>
+                                </>
+
                             }
 
                         </Item>

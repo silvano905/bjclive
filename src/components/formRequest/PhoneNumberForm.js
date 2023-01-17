@@ -104,12 +104,12 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour,
                 />
             </FormControl>
 
-            <Typography variant="body1" gutterBottom style={{fontSize: 16}}>
-                we need your phone number to contact you when the driver has arrived to your location
-            </Typography>
+            {/*<Typography variant="body1" gutterBottom style={{fontSize: 16}}>*/}
+            {/*    we need your phone number to contact you when the driver has arrived to your location*/}
+            {/*</Typography>*/}
 
             {driver.available&&!needsAppointment?
-                <Button type="submit" variant="contained" onClick={requestJumpNow}>
+                <Button type="submit" variant="contained" onClick={requestJumpNow} style={{margin: 10}}>
                     request jumpstart
                 </Button>
                 :

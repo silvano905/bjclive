@@ -28,6 +28,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Button from '@mui/material/Button';
 import {isVisible} from "@testing-library/user-event/dist/utils";
 import {wrapMapToPropsConstant} from "react-redux/lib/connect/wrapMapToProps";
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import {selectAppointments} from "../redux/appointments/appointmentsSlice";
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -42,8 +43,18 @@ const Item = styled(Paper)(({ theme }) => ({
 const ItemThree = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     textAlign: 'center',
-    background: "linear-gradient(45deg, #4ea8de 8%, #5e60ce 80%)",
+    background: "linear-gradient(45deg, #f6fff8 8%, #eff7f6 80%)",
     height: 110,
+    color: 'black',
+    lineHeight: '60px',
+    margin: '6px 50px 20px 59px',
+    paddingTop: 8
+}));
+
+const ItemFour = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    textAlign: 'center',
+    background: "linear-gradient(45deg, #0077b6 8%, #023e8a 80%)",
     color: 'white',
     lineHeight: '60px',
     margin: '6px 50px 20px 59px',
@@ -257,9 +268,13 @@ function Home() {
                             <Typography variant="h4" gutterBottom style={{color: '#3f4238'}}>
                                 Closest Driver
                             </Typography>
-                            <Typography variant="h5" gutterBottom>
-                                <span style={{color: 'blue', fontSize: 30}}>{time}</span> away from
-                            </Typography>
+                            <ItemFour elevation={6}>
+                                <Typography variant="h5" gutterBottom>
+                                    <span style={{color: '#9ef01a', fontSize: 30}}>{time}</span> away from
+                                </Typography>
+                            </ItemFour>
+
+                            <KeyboardDoubleArrowDownIcon fontSize='large'/>
                             <Typography variant="h5" gutterBottom>
                                 <span style={{color: '#023047'}}>{address}</span>
                             </Typography>
@@ -267,10 +282,10 @@ function Home() {
                                 <BoltIcon />
                             </Divider>
                             <ItemThree elevation={6}>
-                                <Typography variant="h4" gutterBottom style={{color: '#2a2a2a'}}>
+                                <Typography variant="h4" gutterBottom style={{color: '#5d5d5d'}}>
                                     Final Price
                                 </Typography>
-                                <Typography variant="h4" gutterBottom style={{color: '#fdfdfd', marginBottom: 20}}>
+                                <Typography variant="h4" gutterBottom style={{color: '#171717', marginBottom: 20}}>
                                     $39.00
                                 </Typography>
                             </ItemThree>

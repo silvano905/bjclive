@@ -39,6 +39,17 @@ const Item = styled(Paper)(({ theme }) => ({
     boxShadow: '0 3px 5px 2px rgba(11, 82, 91, .5)',
 }));
 
+const ItemThree = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    textAlign: 'center',
+    background: "linear-gradient(45deg, #4ea8de 8%, #5e60ce 80%)",
+    height: 110,
+    color: 'white',
+    lineHeight: '60px',
+    margin: '6px 50px 20px 59px',
+    paddingTop: 8
+}));
+
 function Home() {
     const dispatch = useDispatch()
     // const currentMap = useSelector(selectRDM)
@@ -255,12 +266,15 @@ function Home() {
                             <Divider>
                                 <BoltIcon />
                             </Divider>
-                            <Typography variant="h4" gutterBottom>
-                                Final Price
-                            </Typography>
-                            <Typography variant="h4" gutterBottom style={{color: '#00a896', marginBottom: 20}}>
-                                $39.00
-                            </Typography>
+                            <ItemThree elevation={6}>
+                                <Typography variant="h4" gutterBottom style={{color: '#2a2a2a'}}>
+                                    Final Price
+                                </Typography>
+                                <Typography variant="h4" gutterBottom style={{color: '#fdfdfd', marginBottom: 20}}>
+                                    $39.00
+                                </Typography>
+                            </ItemThree>
+
 
                             <PhoneNumberForm needsAppointment={requestAppointment}
                                              address={address} setSelectedHour={setSelectedHour}

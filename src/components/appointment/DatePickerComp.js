@@ -7,7 +7,7 @@ import {db} from '../../config-firebase/firebase'
 import {collection, onSnapshot, query, orderBy, limit, doc, addDoc, serverTimestamp, where, getDocs, updateDoc} from 'firebase/firestore'
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import {InputBase} from "@mui/material";
+import {buttonClasses, InputBase} from "@mui/material";
 import React, {useState, useEffect} from 'react';
 import {styled} from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
@@ -21,6 +21,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import {getAppointments, selectAppointments} from "../../redux/appointments/appointmentsSlice";
 import {setAlert, removeAlert} from "../../redux/alerts/alertsSlice";
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 import ButtonGroup from "@mui/material/ButtonGroup";
 
 
@@ -98,7 +99,7 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
             snapshot.forEach((doc) => {
                 dispatch(
                     getAppointments(
-                        {data: doc.data().times, id: doc.id}
+                        {data: doc.data().times, id: doc.id, day: doc.data().day}
                     )
                 )
             });
@@ -113,6 +114,8 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
     if(appointments&&appointments.data&&appointments.data.length>0){
         timesList = appointments.data.map((item, index)=>{
             let dd = new Date(item.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+            let hour = new Date(item.time).getHours()
+            console.log(appointments.day)
             return(
                 <Grid item sm={2} lg={3} xs={4}>
                     <Card sx={{ minWidth: 20 }} style={{margin: 5}}>
@@ -122,34 +125,38 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
                             </Typography>
                         </CardContent>
                         <CardActions>
-                            <Button onClick={()=>{
-                                // let updatedList = []
-                                // for (let i = 0; i < appointmentsToday.length; i++) {
-                                //     if(appointmentsToday[i].uid===item.uid){
-                                //         updatedList.push({
-                                //             available: true,
-                                //             reserved: true,
-                                //             uid: item.uid,
-                                //             time: item.time,
-                                //             user: 'silvano'
-                                //         })
-                                //     }else {
-                                //         updatedList.push(appointmentsToday[i])
-                                //     }
-                                // }
-                                // updateDoc(doc(db, 'appointments', 'vRDaxyIRohFyDLEigl5o'),{
-                                //     times: updatedList
-                                // }).then(()=>{
-                                //     console.log('updated list')
-                                // })
-                                setSelectedHour({
-                                    time: dd,
-                                    uid: item.uid,
-                                    timestamp: item.time
-                                })
-                            }} variant="contained" style={{margin: 5}} disabled={!!item.reserved}>
-                                add
-                            </Button>
+                            {appointments.day==='today'&&item.reserved||appointments.day==='today'&&hour<=new Date().getHours()?
+                                <Button variant="contained" style={{margin: '5px auto 5px auto'}} disabled>
+                                    <DoNotDisturbIcon/>
+                                </Button>
+                                :
+                                appointments.day==='today'&&!item.reserved&&hour>=new Date().getHours()?
+                                    <Button onClick={()=>{
+                                        setSelectedHour({
+                                            time: dd,
+                                            uid: item.uid,
+                                            timestamp: item.time
+                                        })
+                                    }} variant="contained" style={{margin: '5px auto 5px auto'}}>
+                                        add
+                                    </Button>
+                                    :
+                                    appointments.day==='tomorrow'&&item.reserved?
+                                        <Button variant="contained" style={{margin: '5px auto 5px auto'}} disabled>
+                                            <DoNotDisturbIcon/>
+                                        </Button>
+                                        :
+                                        <Button onClick={()=>{
+                                            setSelectedHour({
+                                                time: dd,
+                                                uid: item.uid,
+                                                timestamp: item.time
+                                            })
+                                        }} variant="contained" style={{margin: '5px auto 5px auto'}}>
+                                            add
+                                        </Button>
+                            }
+
 
                         </CardActions>
                     </Card>

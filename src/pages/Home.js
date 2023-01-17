@@ -31,6 +31,7 @@ import {wrapMapToPropsConstant} from "react-redux/lib/connect/wrapMapToProps";
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import {selectAppointments} from "../redux/appointments/appointmentsSlice";
+import CloseIcon from '@mui/icons-material/Close';
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -298,11 +299,10 @@ function Home() {
 
                             {requestAppointment?
                                 <>
-                                    <DatePickerComp setSelectedHour={setSelectedHour}/>
-
-                                    <Button style={{margin: '20px auto 10px auto'}} type="submit" variant="outlined" onClick={()=>setRequestAppointment(false)}>
-                                        close
+                                    <Button style={{margin: '20px auto 2px auto'}} type="submit" variant="outlined" onClick={()=>setRequestAppointment(false)}>
+                                        <CloseIcon/>
                                     </Button>
+                                    <DatePickerComp setSelectedHour={setSelectedHour}/>
                                 </>
                                 :
                                 <>

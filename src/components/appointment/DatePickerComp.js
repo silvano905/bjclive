@@ -115,7 +115,6 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
         timesList = appointments.data.map((item, index)=>{
             let dd = new Date(item.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
             let hour = new Date(item.time).getHours()
-            console.log(appointments.day)
             return(
                 <Grid item sm={2} lg={3} xs={4}>
                     <Card sx={{ minWidth: 20 }} style={{margin: 5}}>
@@ -181,9 +180,9 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
                 {timesList}
             </Grid>
 
-            <Button variant="outlined" size="medium" onClick={createAppointment}>
-                create
-            </Button>
+            {/*<Button variant="outlined" size="medium" onClick={createAppointment}>*/}
+            {/*    create*/}
+            {/*</Button>*/}
 
         </div>
     )

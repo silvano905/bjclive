@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Navigate, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import LiveChat from "./LiveChat";
+import Live from "../components/live/Live";
 import {parse, stringify, toJSON, fromJSON} from 'flatted';
 import GoogleMapReact from 'google-map-react';
 import {
@@ -363,6 +363,11 @@ function Home() {
                             <Typography variant="h5" gutterBottom>
                                 <span style={{color: '#023047'}}>{address}</span>
                             </Typography>
+
+                            <Divider>
+                                <LocationOnIcon />
+                            </Divider>
+                            <Live currentUser={user}/>
                         </Item>
                     </Grid>
                         :

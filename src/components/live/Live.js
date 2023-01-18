@@ -19,10 +19,9 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
     margin: '15px auto 15px auto'
 }));
-function Live() {
+function Live({currentUser}) {
     const dummy = useRef();
 
-    const currentUser = useSelector(selectUser)
     const myChatId = useSelector(selectChatId)
     const dispatch = useDispatch()
     const [filterMessages, setFilterMessages] = useState('timestamp');
@@ -32,10 +31,6 @@ function Live() {
         reply: ''
     });
 
-    if(!currentUser){
-        let fiveDigitNum = Math.floor(1000 + Math.random() * 90000);
-        dispatch(getUser(fiveDigitNum))
-    }
 
     const postReply = async (e) => {
         e.preventDefault()
@@ -52,14 +47,13 @@ function Live() {
     }
 
     useEffect(()=>{
-        let p = collection(db, 'liveChat')
-        let order = query(p, orderBy(filterMessages, 'desc'), limit(1), where('user', '==', currentUser))
-        const querySnapshot = getDocs(order).then(x=> {
-            x.forEach((doc) => {
-                dispatch(getChatId(doc.id))
-            });
-        })
-
+        // let p = collection(db, 'liveChat')
+        // let order = query(p, orderBy('timestamp', 'desc'), limit(1), where('user', '==', currentUser))
+        // const querySnapshot = getDocs(order).then(x=> {
+        //     x.forEach((doc) => {
+        //         dispatch(getChatId(doc.id))
+        //     });
+        // })
 
         if(currentUser&&myChatId){
             let repliesRef = query(collection(db, 'liveChat', myChatId.toString(), 'replies'), orderBy('timestamp', "asc"))
@@ -99,66 +93,65 @@ function Live() {
         addDoc(p, {
             user: currentUser,
             timestamp: serverTimestamp()
-        }).then(() => {
-            setFormData({...formData, message: ''})
+        }).then((docRef) => {
+            dispatch(getChatId(docRef.id))
         }).catch(err=>{
             console.log(err.message)
         })
     }
 
     return (
-        <Item elevation={4}>
-            <Typography variant="h6" gutterBottom
-                        style={{color: "black"}}
-            >
-                Live Chat
-            </Typography>
-
+        <>
             {myChatId?
-                <>
-                <List       sx={{
-                    width: '100%',
-                    maxWidth: 460,
-                    bgcolor: 'background.paper',
-                    position: 'relative',
-                    overflow: 'auto',
-                    maxHeight: 300,
-                    '& ul': { padding: 0 },
-                }}>
-                    <li>
-                        {list}
-                        <span ref={dummy}></span>
-                    </li>
-                </List>
-                    <div style={{flexBasis: '100%'}}>
-                        <form onSubmit={postReply} style={{margin: 8}}>
-                            <FormControl fullWidth>
-                                <TextField
-                                    label=""
-                                    name='reply'
-                                    multiline
-                                    value={formData.reply}
-                                    onChange={e => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                                />
-                            </FormControl>
-                            <Button size='small' style={{margin: 8}} type='submit' variant="contained" color="primary">
-                                Send
-                            </Button>
-                        </form>
-                    </div>
-                </>
+                <Item elevation={4}>
+                    <Typography variant="h6" gutterBottom
+                                style={{color: "black"}}
+                    >
+                        Messaging
+                    </Typography>
+                        <List       sx={{
+                            width: '100%',
+                            maxWidth: 460,
+                            bgcolor: 'background.paper',
+                            position: 'relative',
+                            overflow: 'auto',
+                            maxHeight: 300,
+                            '& ul': { padding: 0 },
+                        }}>
+                            <li>
+                                {list}
+                                <span ref={dummy}></span>
+                            </li>
+                        </List>
+                        <div style={{flexBasis: '100%'}}>
+                            <form onSubmit={postReply} style={{margin: 8}}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        label="Type.."
+                                        name='reply'
+                                        multiline
+                                        value={formData.reply}
+                                        onChange={e => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                                    />
+                                </FormControl>
+                                <Button size='small' style={{margin: 8}} type='submit' variant="contained" color="primary">
+                                    Send
+                                </Button>
+                            </form>
+                        </div>
 
+                </Item>
                 :
                 <form onSubmit={createRoomChat}>
-                    <FormControl sx={{ m: 1, width: '40ch'}}>
+                    <FormControl sx={{ m: 1, width: '20ch'}}>
                         <Button size='small' style={{marginBottom: 5}} type='submit' variant="contained" color="primary">
-                            start chat
+                            message driver
                         </Button>
                     </FormControl>
                 </form>
             }
+        </>
 
-        </Item>
     );
 }
 

@@ -7,15 +7,16 @@ import GoogleMapReact from 'google-map-react';
 import {
     collection, addDoc,
     query, orderBy, serverTimestamp, limit,
-    onSnapshot, getDocs, where, doc
+    onSnapshot, getDocs, where, doc, updateDoc
 } from "firebase/firestore";
+import RenderGoogleMaps from "../components/googleMaps/RenderGoogleMaps";
 import {db} from '../config-firebase/firebase';
 import DatePickerComp from "../components/appointment/DatePickerComp";
 import AutocompleteComp from "../components/mapsAutocomplete/AutocompleteComp";
 import PhoneNumberForm from "../components/formRequest/PhoneNumberForm";
 import CalculateDistance from "../components/calculateDistance/CalculateDistance";
-import {getLocation, setLocation, selectDriverLocation, selectRDM, setRDM, selectRDMMap, selectRDMMaps, setRDMMap, setRDMMaps} from "../redux/driverLocation/driverLocationSlice";
-import {setUser, setJumpStart, selectUser, selectJumpStart} from "../redux/user/userSlice";
+import {getLocation, setLocation, selectDriverLocation} from "../redux/driverLocation/driverLocationSlice";
+import {setUser, setJumpStart, selectUser, selectJumpStart, clearUser} from "../redux/user/userSlice";
 import mapStyles from './mapStyles';
 import Grid from "@mui/material/Grid";
 import ElectricRickshawIcon from '@mui/icons-material/ElectricRickshaw';
@@ -69,10 +70,7 @@ const ItemFour = styled(Paper)(({ theme }) => ({
 
 function Home() {
     const dispatch = useDispatch()
-    // const currentMap = useSelector(selectRDM)
     const driverLiveLocation = useSelector(selectDriverLocation)
-    // const map = useSelector(selectRDMMap)
-    // const maps = useSelector(selectRDMMaps)
     const appointments = useSelector(selectAppointments)
 
     const user = useSelector(selectUser)
@@ -88,81 +86,13 @@ function Home() {
     }
     );
 
+    //what the user submitted as their location
     const [address, setAddress] = useState(null)
 
+    //the time it takes the driver to get to the location
     const [time, setTime] = useState()
 
-    const[apiData, setApiData] = useState()
-
-    useEffect(()=>{
-        if(apiData){
-            apiIsLoaded(apiData.map, apiData.maps)
-        }
-    }, [address])
-
-
-    // let directionsRenderer;
-    // if(address&&!currentMap){
-    //     directionsRenderer = new maps.DirectionsRenderer({markerOptions: {visible: false}, polylineOptions: {strokeColor: '#003248'}});
-    //     dispatch(setRDM(directionsRenderer))
-    // }
-    const[xx, setXx] = useState()
-
-    if(address&&!xx){
-        setXx(new apiData.maps.DirectionsRenderer({markerOptions: {visible: false}, polylineOptions: {strokeColor: '#003248'}}))
-    }
-
-    const apiIsLoaded = () => {
-        // if(address) {
-        //     const directionsService = new maps.DirectionsService();
-        //     const origin = { lat: driverLiveLocation.lat, lng: driverLiveLocation.lng };
-        //     const destination = { lat: coords.lat, lng: coords.lng };
-        //     directionsService.route(
-        //         {
-        //             origin: origin,
-        //             destination: destination,
-        //             travelMode: maps.TravelMode.DRIVING,
-        //             avoidHighways: true
-        //         },
-        //         (result, status) => {
-        //             if (status === maps.DirectionsStatus.OK) {
-        //                 currentMap.setMap(map)
-        //                 currentMap.setDirections(result);
-        //             } else {
-        //                 console.error(`error fetching directions ${result}`);
-        //             }
-        //         }
-        //     );
-        //
-        // }
-
-        if(address) {
-
-            const directionsService = new apiData.maps.DirectionsService();
-            const origin = { lat: driverLiveLocation.lat, lng: driverLiveLocation.lng };
-            const destination = { lat: coords.lat, lng: coords.lng };
-            directionsService.route(
-                {
-                    origin: origin,
-                    destination: destination,
-                    travelMode: apiData.maps.TravelMode.DRIVING,
-                    avoidHighways: true
-                },
-                (result, status) => {
-                    if (status === apiData.maps.DirectionsStatus.OK) {
-                        xx.setMap(apiData.map)
-                        xx.setDirections(result);
-                    } else {
-                        console.error(`error fetching directions ${result}`);
-                    }
-                }
-            );
-
-        }
-    }
-
     const[requestAppointment, setRequestAppointment] = useState(false)
-    const[appointmentFilter, setAppointmentFilter] = useState('today')
 
     useEffect(() => {
         // let driverLocationRef = collection(db, 'driverLocation');
@@ -190,7 +120,7 @@ function Home() {
 
 
         let p = collection(db, 'jumps')
-        let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("user", "==", user))
+        let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("user", "==", user), where("completed", "==", false))
         onSnapshot(order, (snapshot) => {
             snapshot.forEach((doc) => {
                 dispatch(
@@ -203,33 +133,23 @@ function Home() {
 
     }, [user]);
 
-    const[selectedDay, setSelectedDay] = useState('today')
-
-    const AnyReactComponent = ({ text }) => <div style={{position: 'absolute', transform: 'translate(-50%, -50%)', zIndex: 1, '&:hover': { zIndex: 2 }}}>
-        <ElectricRickshawIcon color="primary" fontSize="large"/>
-    </div>;
-
-    const AnyReactComponentTwo = ({ text }) => <div style={{position: 'absolute', transform: 'translate(-50%, -50%)', zIndex: 1, '&:hover': { zIndex: 2 }}}>
-        <EmojiPeopleIcon color="primary" fontSize="large"/>
-    </div>;
+    const cancelJumpStart = (e) => {
+        e.preventDefault()
+        updateDoc(doc(db, 'driverLocation', 'aUzONUhgWy71y2RqIeBW'), {
+            available: true
+        }).then(async () => {
+            dispatch(clearUser())
+            setAddress(null)
+            await updateDoc(doc(db, 'jumps', jumpStart.id), {
+                completed: true
+            })
+        })
+    }
 
     const [selectedHour, setSelectedHour] = useState({})
 
 
     if(driverLiveLocation&&driverLiveLocation.lat){
-
-        //defaultProps are for the driver
-        const defaultProps = {
-            center: {
-                lat: driverLiveLocation.lat,
-                lng: driverLiveLocation.lng
-            },
-            zoom: 11
-        };
-
-        //end googleMapReact section
-
-
         return (
             <Grid container direction="row" justifyContent="space-evenly" alignItems="center">
 
@@ -242,37 +162,7 @@ function Home() {
                 }
 
                 <Grid item xs={11} sm={11} lg={7}>
-                    <div style={{ height: '100vh', width: '100%' }}>
-                        <GoogleMapReact
-                            bootstrapURLKeys={{ key: "AIzaSyBdAwVeblMeVBwNcdOCCqWwoPkeHDziBdY" }}
-                            defaultCenter={defaultProps.center}
-                            defaultZoom={13}
-                            center={defaultCords}
-                            yesIWantToUseGoogleMapApiInternals
-                            margin={[50, 50, 50, 50]}
-                            onGoogleApiLoaded={({ map, maps }) => {
-                                // dispatch(setRDMMaps(stringify(maps)))
-                                // dispatch(setRDMMap(stringify(map)))
-                                setApiData({map: map, maps: maps})
-                                // apiIsLoaded(map, maps)
-                            }}
-                            options={{ disableDefaultUI: true, zoomControl: true, styles: mapStyles }}
-                        >
-                            <AnyReactComponent
-                                lat={driverLiveLocation.lat}
-                                lng={driverLiveLocation.lng}
-                                text="Closest driver"
-                            />
-                            {coords.lat&&
-                                <AnyReactComponentTwo
-                                    lat={coords.lat}
-                                    lng={coords.lng}
-                                    text="Your location"
-                                />
-                            }
-
-                        </GoogleMapReact>
-                    </div>
+                    <RenderGoogleMaps coords={coords} address={address} defaultCords={defaultCords} driverLiveLocation={driverLiveLocation}/>
                 </Grid>
 
                 {user&&jumpStart?
@@ -363,7 +253,9 @@ function Home() {
                             <Typography variant="h5" gutterBottom>
                                 <span style={{color: '#023047'}}>{address}</span>
                             </Typography>
-
+                            <Button style={{margin: '20px auto 10px auto'}} variant="contained" color="warning" onClick={cancelJumpStart}>
+                                cancel jumpstart
+                            </Button>
                             <Divider>
                                 <LocationOnIcon />
                             </Divider>
@@ -374,12 +266,6 @@ function Home() {
                         null
 
                 }
-
-                {/*<LiveChat/>*/}
-
-                {/*<Grid item sm={11} lg={10} xs={11}>*/}
-                {/*    <DatePickerComp/>*/}
-                {/*</Grid>*/}
 
                 </Grid>
         );

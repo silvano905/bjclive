@@ -4,17 +4,12 @@ export const liveChatSlice = createSlice({
     name: 'liveChat',
     initialState: {
         messages: [],
-        chatId: null,
-        user: null
+        chatId: null
     },
     reducers: {
         getMessages: (state, action) => {
             state.messages = action.payload
         },
-        getUser: (state, action) => {
-            state.user = action.payload
-        },
-
         getChatId: (state, action) => {
             state.chatId = action.payload;
         },
@@ -24,9 +19,8 @@ export const liveChatSlice = createSlice({
     },
 });
 
-export const { getMessages, getChatId, getUser} = liveChatSlice.actions;
+export const { getMessages, getChatId } = liveChatSlice.actions;
 export const selectMessages = (state) => state.liveChat.messages;
-export const selectUser = (state) => state.liveChat.user;
 export const selectChatId = (state) => state.liveChat.chatId;
 
 export default liveChatSlice.reducer;

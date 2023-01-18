@@ -12,11 +12,15 @@ export const userSlice = createSlice({
         },
         setJumpStart: (state, action) => {
             state.jumpStart = action.payload
-        }
+        },
+        clearUser: (state, action) => {
+            state.jumpStart = null
+            state.user = null
+        },
     },
 });
 
-export const { setUser, setJumpStart} = userSlice.actions;
+export const { setUser, setJumpStart, clearUser} = userSlice.actions;
 export const selectUser = (state) => state.user.user;
 export const selectJumpStart = (state) => state.user.jumpStart;
 

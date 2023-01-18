@@ -112,9 +112,10 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
 
     let timesList;
     if(appointments&&appointments.data&&appointments.data.length>0){
-        timesList = appointments.data.map((item, index)=>{
+        timesList = appointments.data.map((item, index)=> {
             let dd = new Date(item.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
             let hour = new Date(item.time).getHours()
+            let mm = new Date().getMinutes()
             return(
                 <Grid item sm={2} lg={3} xs={4}>
                     <Card sx={{ minWidth: 20 }} style={{margin: 5}}>
@@ -129,22 +130,12 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
                                     <DoNotDisturbIcon/>
                                 </Button>
                                 :
-                                appointments.day==='today'&&!item.reserved&&hour>=new Date().getHours()?
-                                    <Button onClick={()=>{
-                                        setSelectedHour({
-                                            time: dd,
-                                            uid: item.uid,
-                                            timestamp: item.time
-                                        })
-                                    }} variant="contained" style={{margin: '5px auto 5px auto'}}>
-                                        add
+                                appointments.day==='today'&&item.reserved||appointments.day==='today'&&hour-new Date().getHours()===1&&mm>30?
+                                    <Button variant="contained" style={{margin: '5px auto 5px auto'}} disabled>
+                                        <DoNotDisturbIcon/>
                                     </Button>
                                     :
-                                    appointments.day==='tomorrow'&&item.reserved?
-                                        <Button variant="contained" style={{margin: '5px auto 5px auto'}} disabled>
-                                            <DoNotDisturbIcon/>
-                                        </Button>
-                                        :
+                                    appointments.day==='today'&&!item.reserved&&hour>=new Date().getHours()?
                                         <Button onClick={()=>{
                                             setSelectedHour({
                                                 time: dd,
@@ -154,6 +145,21 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
                                         }} variant="contained" style={{margin: '5px auto 5px auto'}}>
                                             add
                                         </Button>
+                                        :
+                                        appointments.day==='tomorrow'&&item.reserved?
+                                            <Button variant="contained" style={{margin: '5px auto 5px auto'}} disabled>
+                                                <DoNotDisturbIcon/>
+                                            </Button>
+                                            :
+                                            <Button onClick={()=>{
+                                                setSelectedHour({
+                                                    time: dd,
+                                                    uid: item.uid,
+                                                    timestamp: item.time
+                                                })
+                                            }} variant="contained" style={{margin: '5px auto 5px auto'}}>
+                                                add
+                                            </Button>
                             }
 
 

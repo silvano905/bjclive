@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {db} from '../../config-firebase/firebase'
 import {collection, onSnapshot, query, orderBy, limit, doc, addDoc, serverTimestamp, where, getDocs} from 'firebase/firestore'
 import Button from "@mui/material/Button";
-import {getMessages, selectMessages, getUser, selectUser, selectChatId, getChatId} from "../../redux/liveChat/liveChatSlice";
+import {getMessages, selectMessages, selectChatId, getChatId} from "../../redux/liveChat/liveChatSlice";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Typography from "@mui/material/Typography";

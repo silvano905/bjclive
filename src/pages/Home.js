@@ -15,6 +15,7 @@ import AutocompleteComp from "../components/mapsAutocomplete/AutocompleteComp";
 import PhoneNumberForm from "../components/formRequest/PhoneNumberForm";
 import CalculateDistance from "../components/calculateDistance/CalculateDistance";
 import {getLocation, setLocation, selectDriverLocation, selectRDM, setRDM, selectRDMMap, selectRDMMaps, setRDMMap, setRDMMaps} from "../redux/driverLocation/driverLocationSlice";
+import {setUser, setJumpStart, selectUser, selectJumpStart} from "../redux/user/userSlice";
 import mapStyles from './mapStyles';
 import Grid from "@mui/material/Grid";
 import ElectricRickshawIcon from '@mui/icons-material/ElectricRickshaw';
@@ -30,7 +31,11 @@ import {isVisible} from "@testing-library/user-event/dist/utils";
 import {wrapMapToPropsConstant} from "react-redux/lib/connect/wrapMapToProps";
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import {selectAppointments} from "../redux/appointments/appointmentsSlice";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import {
+    getAppointments,
+    selectAppointments
+} from "../redux/appointments/appointmentsSlice";
 import CloseIcon from '@mui/icons-material/Close';
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -70,6 +75,8 @@ function Home() {
     // const maps = useSelector(selectRDMMaps)
     const appointments = useSelector(selectAppointments)
 
+    const user = useSelector(selectUser)
+    const jumpStart = useSelector(selectJumpStart)
     let location = useLocation()
 
     //googleMapReact section
@@ -181,7 +188,20 @@ function Home() {
             setDefaultCords({lat: doc.data().lat, lng: doc.data().lng})
         });
 
-    }, []);
+
+        let p = collection(db, 'jumps')
+        let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("user", "==", user))
+        onSnapshot(order, (snapshot) => {
+            snapshot.forEach((doc) => {
+                dispatch(
+                    setJumpStart(
+                        {data: doc.data(), id: doc.id}
+                    )
+                )
+            });
+        })
+
+    }, [user]);
 
     const[selectedDay, setSelectedDay] = useState('today')
 
@@ -255,15 +275,20 @@ function Home() {
                     </div>
                 </Grid>
 
-                <Grid item sm={11} lg={10} xs={11}>
-                    <AutocompleteComp
-                        setAddress={setAddress}
-                        setDefaultCords={setDefaultCords}
-                        setCoords={setCoords}
-                    />
-                </Grid>
+                {user&&jumpStart?
+                    null
+                    :
+                    <Grid item sm={11} lg={10} xs={11}>
+                        <AutocompleteComp
+                            setAddress={setAddress}
+                            setDefaultCords={setDefaultCords}
+                            setCoords={setCoords}
+                        />
+                    </Grid>
+                }
 
-                {address&&
+
+                {address&&!user&&!jumpStart?
                     <Grid item sm={11} lg={10} xs={11}>
                         <Item elevation={4}>
                             <Typography variant="h4" gutterBottom style={{color: '#3f4238'}}>
@@ -318,6 +343,31 @@ function Home() {
 
                         </Item>
                     </Grid>
+                    :
+                    user&&jumpStart?
+                    <Grid item sm={11} lg={10} xs={11}>
+                        <Item elevation={4}>
+                            <Typography variant="h5" gutterBottom style={{}}>
+                                Live Tracking
+                            </Typography>
+                            <Divider>
+                                <LocationOnIcon />
+                            </Divider>
+                            <ItemFour elevation={6}>
+                                <Typography variant="h5" gutterBottom>
+                                    Driver is <span style={{color: '#9ef01a', fontSize: 30}}>{time}</span> away from your location
+                                </Typography>
+                            </ItemFour>
+
+                            <KeyboardDoubleArrowDownIcon fontSize='large'/>
+                            <Typography variant="h5" gutterBottom>
+                                <span style={{color: '#023047'}}>{address}</span>
+                            </Typography>
+                        </Item>
+                    </Grid>
+                        :
+                        null
+
                 }
 
                 {/*<LiveChat/>*/}

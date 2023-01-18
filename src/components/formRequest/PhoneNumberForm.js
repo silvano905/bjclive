@@ -11,8 +11,10 @@ import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
-import {doc, updateDoc} from "firebase/firestore";
+import {addDoc, collection, doc, serverTimestamp, updateDoc} from "firebase/firestore";
 import {db} from "../../config-firebase/firebase";
+import {setUser} from "../../redux/user/userSlice";
+import {useDispatch} from "react-redux";
 
 export default function PhoneNumberForm({driver, hour, setSelectedHour,
                                             appointments, address, needsAppointment}) {
@@ -20,12 +22,27 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour,
         phone: ''
     });
     const { phone } = formData;
+    const dispatch = useDispatch()
 
     const onChange = (e) =>
         setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const requestJumpNow = (e) => {
         e.preventDefault()
+        let p = collection(db, 'jumps')
+        addDoc(p, {
+            user: phone,
+            time: 'now',
+            completed: false,
+            address: address,
+            timestamp: serverTimestamp()
+        }).then(async () => {
+            await updateDoc(doc(db, 'driverLocation', 'aUzONUhgWy71y2RqIeBW'), {
+                available: false
+            })
+            dispatch(setUser(phone))
+            setFormData({phone: ''})
+        })
     }
 
     const makeAppointment = (e) => {

@@ -115,6 +115,7 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
         timesList = appointments.data.map((item, index)=> {
             let dd = new Date(item.time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
             let hour = new Date(item.time).getHours()
+            let mmOne = new Date(item.time).getMinutes()
             let mm = new Date().getMinutes()
             return(
                 <Grid item sm={2} lg={3} xs={4}>
@@ -130,7 +131,7 @@ export default function DatePickerComp({setSelectedHour, appointmentsFilter}) {
                                     <DoNotDisturbIcon/>
                                 </Button>
                                 :
-                                appointments.day==='today'&&item.reserved||appointments.day==='today'&&hour-new Date().getHours()===1&&mm>30?
+                                appointments.day==='today'&&item.reserved||appointments.day==='today'&&hour-new Date().getHours()===1&&mm>30&&mmOne<30?
                                     <Button variant="contained" style={{margin: '5px auto 5px auto'}} disabled>
                                         <DoNotDisturbIcon/>
                                     </Button>

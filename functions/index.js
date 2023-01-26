@@ -1,3 +1,4 @@
+const client = require('twilio')('ACf6884f2d6a1f92e3df1709b911dd39ee', '32b49c05cdc530f1282a9d292fea0c4c');
 const functionsFirebase = require("firebase-functions");
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -53,3 +54,25 @@ exports.cleanReservations = functionsFirebase.pubsub.schedule('every day 22:00')
         });
     return null;
 });
+
+
+exports.sendSMS = functionsFirebase.firestore
+    .document('jumps/{jumpId}')
+    .onCreate(async (snap, context) => {
+        // Get the new jump document
+        const newJump = snap.data();
+        // Get the jumpId
+        const jumpId = context.params.jumpId;
+        await client.messages
+            .create({
+                body: 'hi from twilio',
+                messagingServiceSid: 'MG4001653e7657f5be3fd3dadf497d2941',
+                to: '+17085489664'
+            })
+
+        // Log the new jump to the console
+        console.log(`New jump created with ID: ${jumpId}`);
+        console.log(`Jump data: ${JSON.stringify(newJump)}`);
+
+        return null;
+    });

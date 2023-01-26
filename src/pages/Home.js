@@ -119,17 +119,21 @@ function Home() {
         });
 
 
-        let p = collection(db, 'jumps')
-        let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("user", "==", user), where("completed", "==", false))
-        onSnapshot(order, (snapshot) => {
-            snapshot.forEach((doc) => {
-                dispatch(
-                    setJumpStart(
-                        {data: doc.data(), id: doc.id}
+        if(user){
+            let p = collection(db, 'jumps')
+            let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("user", "==", user),
+                where("completed", "==", false), where("canceled", "==", false))
+            onSnapshot(order, (snapshot) => {
+                snapshot.forEach((doc) => {
+                    dispatch(
+                        setJumpStart(
+                            {data: doc.data(), id: doc.id}
+                        )
                     )
-                )
-            });
-        })
+                });
+            })
+        }
+
 
     }, [user]);
 
@@ -138,11 +142,12 @@ function Home() {
         updateDoc(doc(db, 'driverLocation', 'aUzONUhgWy71y2RqIeBW'), {
             available: true
         }).then(async () => {
-            dispatch(clearUser())
-            setAddress(null)
             await updateDoc(doc(db, 'jumps', jumpStart.id), {
+                canceled: true,
                 completed: true
             })
+            dispatch(clearUser())
+            setAddress(null)
         })
     }
 

@@ -15,7 +15,6 @@ import {addDoc, collection, doc, serverTimestamp, updateDoc} from "firebase/fire
 import {db} from "../../config-firebase/firebase";
 import {setUser} from "../../redux/user/userSlice";
 import {useDispatch} from "react-redux";
-
 export default function PhoneNumberForm({driver, hour, setSelectedHour,
                                             appointments, address, needsAppointment}) {
     const [formData, setFormData] = useState({
@@ -34,12 +33,14 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour,
             user: phone,
             time: 'now',
             completed: false,
+            canceled: false,
             address: address,
             timestamp: serverTimestamp()
         }).then(async () => {
             await updateDoc(doc(db, 'driverLocation', 'aUzONUhgWy71y2RqIeBW'), {
                 available: false
             })
+
             dispatch(setUser(phone))
             setFormData({phone: ''})
         })

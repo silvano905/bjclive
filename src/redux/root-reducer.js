@@ -8,7 +8,7 @@ import appointmentsReducer from '../redux/appointments/appointmentsSlice'
 import userReducer from '../redux/user/userSlice'
 
 const persistConfig = {
-    key: 'root',
+    key: 'bjc',
     storage,
     whitelist: ['alerts', 'driver', 'messages', 'liveChat', 'appointments', 'user']
 };

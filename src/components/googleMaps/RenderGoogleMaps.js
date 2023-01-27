@@ -8,21 +8,23 @@ export default function RenderGoogleMaps({coords, driverLiveLocation, defaultCor
     //GOOGLEMAPREACT Section start here
     //data passed from GoogleMapReact
     const[apiData, setApiData] = useState()
+    const[mapRenderer, setMapRenderer] = useState()
 
     useEffect(()=>{
         if(apiData){
             apiIsLoaded(apiData.map, apiData.maps)
         }
-    }, [address])
+    }, [address, mapRenderer])
 
     //render to GoogleMapReact
-    const[mapRenderer, setMapRenderer] = useState()
-
-    if(address&&!mapRenderer){
+    if(address&&!mapRenderer&&apiData){
         setMapRenderer(new apiData.maps.DirectionsRenderer({markerOptions: {visible: false}, polylineOptions: {strokeColor: '#003248'}}))
     }
 
+
+
     const apiIsLoaded = () => {
+
         if(address) {
 
             const directionsService = new apiData.maps.DirectionsService();
@@ -87,7 +89,7 @@ export default function RenderGoogleMaps({coords, driverLiveLocation, defaultCor
                         lng={driverLiveLocation.lng}
                         text="Closest driver"
                     />
-                    {coords.lat&&
+                    {coords&&coords.lat&&
                         <AnyReactComponentTwo
                             lat={coords.lat}
                             lng={coords.lng}

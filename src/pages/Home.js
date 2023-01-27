@@ -215,7 +215,7 @@ function Home() {
                             <PhoneNumberForm needsAppointment={requestAppointment}
                                              address={address} setSelectedHour={setSelectedHour}
                                              driver={driverLiveLocation} hour={selectedHour}
-                                             appointments={appointments}/>
+                                             appointments={appointments} defaultCords={defaultCords} coords={coords}/>
 
                             {requestAppointment?
                                 <>

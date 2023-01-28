@@ -3,6 +3,8 @@ import {Autocomplete} from "@react-google-maps/api";
 import Typography from "@mui/material/Typography";
 import {InputBase} from "@mui/material";
 import React, {useState, useEffect} from 'react';
+import {Link, useNavigate} from "react-router-dom";
+
 import {styled} from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import FormControl from "@mui/material/FormControl";
@@ -16,10 +18,11 @@ import {db} from "../../config-firebase/firebase";
 import {setUser} from "../../redux/user/userSlice";
 import {useDispatch} from "react-redux";
 export default function PhoneNumberForm({driver, hour, setSelectedHour,
-                                            appointments, address, needsAppointment, defaultCords, coords}) {
+                                            appointments, address, needsAppointment, defaultCords, coords, history}) {
     const [formData, setFormData] = useState({
         phone: ''
     });
+    const navigate = useNavigate()
     const { phone } = formData;
     const dispatch = useDispatch()
 
@@ -38,13 +41,14 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour,
             canceled: false,
             address: address,
             timestamp: serverTimestamp()
-        }).then(async () => {
+        }).then(async (res) => {
             await updateDoc(doc(db, 'driverLocation', 'aUzONUhgWy71y2RqIeBW'), {
                 available: false
             })
 
             dispatch(setUser(phone))
             setFormData({phone: ''})
+            return navigate(`/jump/${res.id}`)
         })
     }
 
@@ -141,3 +145,4 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour,
         </form>
     )
 }
+

@@ -121,6 +121,8 @@ const JumpByID = () => {
         }
     );
 
+    const[message, setMessage] = useState()
+
     useEffect(() => {
         const unsub = onSnapshot(doc(db, "driverLocation", "aUzONUhgWy71y2RqIeBW"), (doc) => {
             dispatch(
@@ -132,15 +134,25 @@ const JumpByID = () => {
         });
 
         const cv = onSnapshot(doc(db, "jumps", params.id), (doc) => {
+            if(doc.data().canceled){
+                setMessage(`Jump start service at: ${doc.data().address} was cancelled. `)
+            }
+            if(doc.data().completed){
+                setMessage(`Jump start service at: ${doc.data().address} was completed. `)
+            }
+            if(!doc.data().canceled&&!doc.data().completed){
                 dispatch(
                     setJumpStart(
                         {data: doc.data(), id: doc.id}
                     )
                 )
-            dispatch(setUser(doc.data().user))
-            setDefaultCords(doc.data().defaultCords)
-            setCoords(doc.data().coords)
-            setAddress(doc.data().address)
+                dispatch(setUser(doc.data().user))
+                setDefaultCords(doc.data().defaultCords)
+                setCoords(doc.data().coords)
+                setAddress(doc.data().address)
+            }
+
+
         });
     }, [params.id]);
 
@@ -151,7 +163,7 @@ const JumpByID = () => {
         }).then(async () => {
             await updateDoc(doc(db, 'jumps', jumpStart.id), {
                 canceled: true,
-                completed: true
+                completed: false
             })
             dispatch(clearUser())
             setAddress(null)
@@ -162,50 +174,62 @@ const JumpByID = () => {
     if(driverLiveLocation&&driverLiveLocation.lat){
         return (
             <Box sx={{ flexGrow: 1 }}>
-                <Grid  container spacing={1} justifyContent="center">
-                    {coords&&coords.lat&&
-                        <CalculateDistance
-                            setTime={setTime}
-                            coords={coords}
-                            driverLocation={driverLiveLocation}
-                        />
-                    }
+                {!message?
+                    <Grid  container spacing={1} justifyContent="center">
+                        {coords&&coords.lat&&
+                            <CalculateDistance
+                                setTime={setTime}
+                                coords={coords}
+                                driverLocation={driverLiveLocation}
+                            />
+                        }
 
-                    <Grid item sm={11} lg={6} xs={11}>
-                        <RenderGoogleMaps coords={coords} address={address} defaultCords={defaultCords} driverLiveLocation={driverLiveLocation}/>
+                        <Grid item sm={11} lg={6} xs={11}>
+                            <RenderGoogleMaps coords={coords} address={address} defaultCords={defaultCords} driverLiveLocation={driverLiveLocation}/>
+                        </Grid>
+
+                        {jumpStart&&
+                            <Grid item sm={11} lg={10} xs={11}>
+                                <Item elevation={4}>
+                                    <Typography variant="h5" gutterBottom>
+                                        Live Tracking
+                                    </Typography>
+                                    <Divider>
+                                        <LocationOnIcon />
+                                    </Divider>
+                                    <ItemFour elevation={6}>
+                                        <Typography variant="h5" gutterBottom>
+                                            Driver is <span style={{color: '#9ef01a', fontSize: 30}}>{time}</span> away from your location
+                                        </Typography>
+                                    </ItemFour>
+
+                                    <KeyboardDoubleArrowDownIcon fontSize='large'/>
+                                    <Typography variant="h5" gutterBottom>
+                                        <span style={{color: '#023047'}}>{address}</span>
+                                    </Typography>
+                                    <Button style={{margin: '20px auto 10px auto'}} variant="contained" color="warning" onClick={cancelJumpStart}>
+                                        cancel jumpstart
+                                    </Button>
+                                    <Divider>
+                                        <LocationOnIcon />
+                                    </Divider>
+                                    <Live currentUser={user}/>
+                                </Item>
+                            </Grid>
+                        }
+
                     </Grid>
-
-                    {jumpStart&&
+                    :
+                    <Grid  container spacing={1} justifyContent="center">
                         <Grid item sm={11} lg={10} xs={11}>
                             <Item elevation={4}>
-                                <Typography variant="h5" gutterBottom style={{}}>
-                                    Live Tracking
+                                <Typography variant="h5" gutterBottom >
+                                    {message}
                                 </Typography>
-                                <Divider>
-                                    <LocationOnIcon />
-                                </Divider>
-                                <ItemFour elevation={6}>
-                                    <Typography variant="h5" gutterBottom>
-                                        Driver is <span style={{color: '#9ef01a', fontSize: 30}}>{time}</span> away from your location
-                                    </Typography>
-                                </ItemFour>
-
-                                <KeyboardDoubleArrowDownIcon fontSize='large'/>
-                                <Typography variant="h5" gutterBottom>
-                                    <span style={{color: '#023047'}}>{address}</span>
-                                </Typography>
-                                <Button style={{margin: '20px auto 10px auto'}} variant="contained" color="warning" onClick={cancelJumpStart}>
-                                    cancel jumpstart
-                                </Button>
-                                <Divider>
-                                    <LocationOnIcon />
-                                </Divider>
-                                <Live currentUser={user}/>
                             </Item>
                         </Grid>
-                    }
-
-                </Grid>
+                    </Grid>
+                }
             </Box>
         );
     }else {

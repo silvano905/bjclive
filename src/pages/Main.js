@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Navigate, useLocation} from "react-router-dom";
+import {Navigate, useLocation, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import Live from "../components/live/Live";
 import {parse, stringify, toJSON, fromJSON} from 'flatted';
@@ -68,7 +68,7 @@ const ItemFour = styled(Paper)(({ theme }) => ({
     padding: 5
 }));
 
-function Home() {
+function Main() {
     const dispatch = useDispatch()
     const driverLiveLocation = useSelector(selectDriverLocation)
     const appointments = useSelector(selectAppointments)
@@ -81,10 +81,12 @@ function Home() {
     const [coords, setCoords] = useState({});
     //defaultCords are for the driver
     const [defaultCords, setDefaultCords] = useState({
-        lat: null,
-        lng: null
-    }
+            lat: null,
+            lng: null
+        }
     );
+    const navigate = useNavigate()
+
 
     //what the user submitted as their location
     const [address, setAddress] = useState(null)
@@ -119,23 +121,7 @@ function Home() {
         });
 
 
-        if(user){
-            let p = collection(db, 'jumps')
-            let order = query(p, orderBy('timestamp', 'desc'), limit(1), where("user", "==", user),
-                where("completed", "==", false), where("canceled", "==", false))
-            onSnapshot(order, (snapshot) => {
-                snapshot.forEach((doc) => {
-                    dispatch(
-                        setJumpStart(
-                            {data: doc.data(), id: doc.id}
-                        )
-                    )
-                });
-            })
-        }
-
-
-    }, [user]);
+    }, []);
 
     const cancelJumpStart = (e) => {
         e.preventDefault()
@@ -153,6 +139,9 @@ function Home() {
 
     const [selectedHour, setSelectedHour] = useState({})
 
+    if(jumpStart&&!jumpStart.data.canceled&&!jumpStart.data.completed){
+        return navigate(`/jump/${jumpStart.id}`)
+    }
 
     if(driverLiveLocation&&driverLiveLocation.lat){
         return (
@@ -170,7 +159,7 @@ function Home() {
                     <RenderGoogleMaps coords={coords} address={address} defaultCords={defaultCords} driverLiveLocation={driverLiveLocation}/>
                 </Grid>
 
-                {user&&jumpStart&&!jumpStart.data.canceled?
+                {user && jumpStart && !jumpStart.data.canceled ?
                     null
                     :
                     <Grid item sm={11} lg={10} xs={11}>
@@ -183,7 +172,7 @@ function Home() {
                 }
 
 
-                {address&&jumpStart.data.canceled||address&&!jumpStart||address&&jumpStart.data.completed?
+                {address&&
                     <Grid item sm={11} lg={10} xs={11}>
                         <Item elevation={4}>
                             <Typography variant="h4" gutterBottom style={{color: '#3f4238'}}>
@@ -238,41 +227,13 @@ function Home() {
 
                         </Item>
                     </Grid>
-                    :
-                    user&&jumpStart&&!jumpStart.data.canceled?
-                    <Grid item sm={11} lg={10} xs={11}>
-                        <Item elevation={4}>
-                            <Typography variant="h5" gutterBottom style={{}}>
-                                Live Tracking
-                            </Typography>
-                            <Divider>
-                                <LocationOnIcon />
-                            </Divider>
-                            <ItemFour elevation={6}>
-                                <Typography variant="h5" gutterBottom>
-                                    Driver is <span style={{color: '#9ef01a', fontSize: 30}}>{time}</span> away from your location
-                                </Typography>
-                            </ItemFour>
-
-                            <KeyboardDoubleArrowDownIcon fontSize='large'/>
-                            <Typography variant="h5" gutterBottom>
-                                <span style={{color: '#023047'}}>{address}</span>
-                            </Typography>
-                            <Button style={{margin: '20px auto 10px auto'}} variant="contained" color="warning" onClick={cancelJumpStart}>
-                                cancel jumpstart
-                            </Button>
-                            <Divider>
-                                <LocationOnIcon />
-                            </Divider>
-                            <Live currentUser={user}/>
-                        </Item>
-                    </Grid>
-                        :
-                        null
-
                 }
 
-                </Grid>
+
+
+
+
+            </Grid>
         );
     }else {
         return (
@@ -284,4 +245,4 @@ function Home() {
 
 }
 
-export default Home;
+export default Main;

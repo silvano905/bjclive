@@ -63,7 +63,7 @@ exports.sendSMS = functionsFirebase.runWith({ secrets: ["TWILIO_SID", "TWILIO_AU
         const newJump = snap.data();
         // Get the jumpId
         const jumpId = context.params.jumpId;
-        const link = `https://bjclive-9393a.web.app/${jumpId}`
+        const link = `https://bjclive-9393a.web.app/jump/${jumpId}`
         await client.messages
             .create({
                 body: `you requested a jump start service at: ${newJump.address}.

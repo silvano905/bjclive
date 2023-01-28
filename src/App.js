@@ -5,6 +5,7 @@ import BottomNavbar from "./navbar/BottomNavbar";
 import Alerts from "./components/alerts/Alert";
 import LiveChat from "./pages/LiveChat";
 import JumpByID from "./pages/JumpByID";
+import Main from "./pages/Main";
 function App() {
 
   const ProtectedRoute = ({
@@ -24,9 +25,9 @@ function App() {
         <Navbar/>
         <Alerts/>
         <Routes>
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Main />} />
             <Route path='/live' element={<LiveChat />} />
-            <Route path='/:id' element={<JumpByID />} />
+            <Route path='/jump/:id' element={<JumpByID />} />
         </Routes>
         <BottomNavbar/>
       </div>

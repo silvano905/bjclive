@@ -18,7 +18,7 @@ import {db} from "../../config-firebase/firebase";
 import {setUser} from "../../redux/user/userSlice";
 import {useDispatch} from "react-redux";
 export default function PhoneNumberForm({driver, hour, setSelectedHour,
-                                            appointments, address, needsAppointment, defaultCords, coords, history}) {
+                                            appointments, address, needsAppointment, defaultCords, coords}) {
     const [formData, setFormData] = useState({
         phone: ''
     });
@@ -72,7 +72,7 @@ export default function PhoneNumberForm({driver, hour, setSelectedHour,
             updateDoc(doc(db, 'appointments', appointments.id),{
                 times: updatedList
             }).then(()=>{
-                console.log('updated list')
+
             })
 
         }else {

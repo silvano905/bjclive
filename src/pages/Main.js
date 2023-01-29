@@ -97,15 +97,6 @@ function Main() {
     const[requestAppointment, setRequestAppointment] = useState(false)
 
     useEffect(() => {
-        // let driverLocationRef = collection(db, 'driverLocation');
-        // let driverQuery = query(driverLocationRef, orderBy('timestamp', 'desc'), limit(1), where("available", "==", true))
-        // onSnapshot(driverQuery, (snapshot) => {
-        //     // dispatch(
-        //     //     getLocation(
-        //     //         snapshot.docs.map(doc => ({data: doc.data(), id: doc.id}))
-        //     //     )
-        //     // )
-        // })
         const unsub = onSnapshot(doc(db, "driverLocation", "aUzONUhgWy71y2RqIeBW"), (doc) => {
             dispatch(
                 getLocation(
@@ -122,20 +113,6 @@ function Main() {
 
 
     }, []);
-
-    const cancelJumpStart = (e) => {
-        e.preventDefault()
-        updateDoc(doc(db, 'driverLocation', 'aUzONUhgWy71y2RqIeBW'), {
-            available: true
-        }).then(async () => {
-            await updateDoc(doc(db, 'jumps', jumpStart.id), {
-                canceled: true,
-                completed: false
-            })
-            dispatch(clearUser())
-            setAddress(null)
-        })
-    }
 
     const [selectedHour, setSelectedHour] = useState({})
 
@@ -228,10 +205,6 @@ function Main() {
                         </Item>
                     </Grid>
                 }
-
-
-
-
 
             </Grid>
         );

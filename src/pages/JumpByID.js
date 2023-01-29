@@ -136,9 +136,17 @@ const JumpByID = () => {
         const cv = onSnapshot(doc(db, "jumps", params.id), (doc) => {
             if(doc.data().canceled){
                 setMessage(`Jump start service at: ${doc.data().address} was cancelled. `)
+                dispatch(clearUser())
+                setAddress(null)
+                setCoords({})
+                setDefaultCords({lat: null, lng: null})
             }
             if(doc.data().completed){
                 setMessage(`Jump start service at: ${doc.data().address} was completed. `)
+                dispatch(clearUser())
+                setAddress(null)
+                setCoords({})
+                setDefaultCords({lat: null, lng: null})
             }
             if(!doc.data().canceled&&!doc.data().completed){
                 dispatch(

@@ -11,6 +11,7 @@ export default function CalculateDistance({setTime, coords, driverLocation}) {
                 travelMode: "DRIVING",
             }}
             callback = {(res) => {
+                console.log(res)
                 setTime(res.rows[0].elements[0].duration.text)
             }}
         />

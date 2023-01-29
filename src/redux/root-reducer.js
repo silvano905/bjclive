@@ -6,11 +6,12 @@ import driverLocationReducer from '../redux/driverLocation/driverLocationSlice'
 import liveChatReducer from '../redux/liveChat/liveChatSlice'
 import appointmentsReducer from '../redux/appointments/appointmentsSlice'
 import userReducer from '../redux/user/userSlice'
+import jumpsReducer from '../redux/admin/jumpsSlice'
 
 const persistConfig = {
     key: 'bjc',
     storage,
-    whitelist: ['alerts', 'driver', 'messages', 'liveChat', 'appointments', 'user']
+    whitelist: ['alerts', 'driver', 'messages', 'liveChat', 'appointments', 'user', 'jump']
 };
 
 const rootReducer = combineReducers({
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
     driver: driverLocationReducer,
     liveChat: liveChatReducer,
     appointments: appointmentsReducer,
-    user: userReducer
+    user: userReducer,
+    jump: jumpsReducer
 });
 
 export default persistReducer(persistConfig, rootReducer);
